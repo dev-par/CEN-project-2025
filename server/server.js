@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import path from "path";
 import rootRouter from './routes/root.js';
+import clubsRouter from './routes/clubs.js';
 import { fileURLToPath } from "url";
 //import records from "./routes/record.js";
 
@@ -19,6 +20,8 @@ app.use('/', express.static(path.join(__dirname, 'public')))
 
 app.use('/', rootRouter);
 
+app.use('/api/clubs', clubsRouter);
+
 app.all('*', (req, res) => {
     res.status(404)
     if (req.accepts('html')) {
@@ -30,7 +33,7 @@ app.all('*', (req, res) => {
     else {
         res.type('txt').send('404 Not Found')
     }
-})
+});
 
 app.listen(PORT, () => {
     console.log(`Server listening on port ${PORT}`);

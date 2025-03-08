@@ -32,6 +32,9 @@ npm install
 cd server
 npm run dev
 ```
+
+You're going to need to add the .env file before starting the backend or else the db wont connect. Add it to the server directory, NOT NESTED.
+
 - Runs the **Express server** on `http://localhost:5050`
 - Uses **nodemon** for automatic restarts on file changes
 

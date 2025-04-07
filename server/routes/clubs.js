@@ -40,11 +40,16 @@ router.post('/', async (req, res) => {
 
 // get all clubs or filter by major
 router.get('/', async (req, res) => {
-    const { major } = req.query;
+    const { major, sortBy } = req.query;
+    let sortOptions = {};
+
+    if (sortBy === 'recentlyUpdated') {
+        sortOptions = { updatedAt: -1 };
+    }
 
     try {
         const query = major ? { major } : {};
-        const result = await clubs.find(query).toArray();
+        const result = await clubs.find(query).sort(sortOptions).toArray();
 
         if (result.length === 0) {
             return res.status(200).json({ message: "No clubs found", data: [] });

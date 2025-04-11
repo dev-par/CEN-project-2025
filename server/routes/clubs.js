@@ -17,7 +17,6 @@ router.post('/', async (req, res) => {
     const newClub = {
         name,
         description,
-        tags,
         major,
         chillMeter,
         socials,
@@ -65,7 +64,7 @@ router.get('/', async (req, res) => {
 // update club by ID
 router.put('/:id', async (req, res) => {
     const { id } = req.params;
-    const { name, description, tags, major, chillMeter, socials } = req.body;
+    const { name, description, major, chillMeter, socials } = req.body;
 
     if (!ObjectId.isValid(id)) {
         return res.status(400).json({ message: 'Invalid ID format' });
@@ -75,7 +74,6 @@ router.put('/:id', async (req, res) => {
         const updateFields = {};
         if (name) updateFields.name = name;
         if (description) updateFields.description = description;
-        if (tags) updateFields.tags = tags;
         if (major) updateFields.major = major;
         if (chillMeter) updateFields.chillMeter = chillMeter;
         if (socials) updateFields.socials = socials;

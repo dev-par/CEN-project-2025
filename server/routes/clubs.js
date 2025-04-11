@@ -8,7 +8,7 @@ const clubs = db.collection('clubs');
 
 // create a new club
 router.post('/', async (req, res) => {
-    const { name, description, tags, major, chillMeter, socials } = req.body;
+    const { name, description, major, chillMeter, socials } = req.body;
 
     if (!name || !major) {
         return res.status(400).json({ message: 'Name and major are required' });

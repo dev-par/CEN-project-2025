@@ -8,7 +8,7 @@ const clubs = db.collection('clubs');
 
 // create a new club
 router.post('/', async (req, res) => {
-    const { name, description, tags, major, chillMeter, socials } = req.body;
+    const { name, description, major, chillMeter, socials } = req.body;
 
     if (!name || !major) {
         return res.status(400).json({ message: 'Name and major are required' });
@@ -17,7 +17,6 @@ router.post('/', async (req, res) => {
     const newClub = {
         name,
         description,
-        tags,
         major,
         chillMeter,
         socials,
@@ -40,32 +39,38 @@ router.post('/', async (req, res) => {
 
 // get all clubs or filter by major
 router.get('/', async (req, res) => {
-    const { major, sortBy } = req.query;
+    const { major, sortBy, search } = req.query;
     let sortOptions = {};
-
+    let query = {};
+  
+    // filter by major if selected
+    if (major) {
+      query.major = major;
+    }
+  
+    
+    if (search && search.trim() !== '') {
+      query.name = { $regex: `^${search}`, $options: 'i' };
+    }
+  
+    
     if (sortBy === 'recentlyUpdated') {
-        sortOptions = { updatedAt: -1 };
+      sortOptions = { updatedAt: -1 };
     }
-
+  
     try {
-        const query = major ? { major } : {};
-        const result = await clubs.find(query).sort(sortOptions).toArray();
-
-        if (result.length === 0) {
-            return res.status(200).json({ message: "No clubs found", data: [] });
-        }
-
-        res.status(200).json(result);
-    } catch(err) {
-        console.error(err);
-        res.status(500).json({ message: "Server error" });
+      const result = await clubs.find(query).sort(sortOptions).toArray();
+      res.status(200).json(result); 
+    } catch (err) {
+      console.error('Error fetching clubs:', err);
+      res.status(500).json({ message: "Server error" });
     }
-});
-
+  });
+  
 // update club by ID
 router.put('/:id', async (req, res) => {
     const { id } = req.params;
-    const { name, description, tags, major, chillMeter, socials } = req.body;
+    const { name, description, major, chillMeter, socials } = req.body;
 
     if (!ObjectId.isValid(id)) {
         return res.status(400).json({ message: 'Invalid ID format' });
@@ -75,7 +80,6 @@ router.put('/:id', async (req, res) => {
         const updateFields = {};
         if (name) updateFields.name = name;
         if (description) updateFields.description = description;
-        if (tags) updateFields.tags = tags;
         if (major) updateFields.major = major;
         if (chillMeter) updateFields.chillMeter = chillMeter;
         if (socials) updateFields.socials = socials;

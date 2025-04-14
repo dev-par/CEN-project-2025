@@ -1,4 +1,3 @@
-import React from 'react';
 import '../styles/SideBar.css';
 
 function Sidebar({ filters, setFilter }) {

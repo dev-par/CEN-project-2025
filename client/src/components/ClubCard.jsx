@@ -1,4 +1,3 @@
-import React from 'react';
 
 function ClubCard({ club }) {
   let majors = [];

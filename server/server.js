@@ -19,10 +19,12 @@ app.use(express.json());
 
 app.use('/', express.static(path.join(__dirname, 'public')))
 
+app.use('/api', authRouter);
+
 app.use('/', rootRouter);
 
 app.use('/api/clubs', clubsRouter);
-app.use('/api', authRouter);
+
 
 app.all('*', (req, res) => {
     res.status(404)

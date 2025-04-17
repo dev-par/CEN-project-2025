@@ -3,9 +3,8 @@ import cors from "cors";
 import path from "path";
 import rootRouter from './routes/root.js';
 import clubsRouter from './routes/clubs.js';
-import { fileURLToPath } from "url";
-//import records from "./routes/record.js";
 import authRouter from './routes/auth.js';
+import { fileURLToPath } from "url";
 
 const PORT = process.env.PORT || 5050;
 const app = express();
@@ -15,27 +14,28 @@ const __dirname = path.dirname(__filename);
 
 app.use(cors());
 app.use(express.json());
-//app.use("/record", records);
 
-app.use('/', express.static(path.join(__dirname, 'public')))
+// Serve static files first
+app.use('/', express.static(path.join(__dirname, 'public')));
 
+// ✅ Mount /api routes FIRST
 app.use('/api', authRouter);
-
-app.use('/', rootRouter);
-
 app.use('/api/clubs', clubsRouter);
 
+// ✅ Mount root router LAST
+app.use('/', rootRouter);
 
+// ✅ Catch all 404
 app.all('*', (req, res) => {
-    res.status(404)
+    res.status(404);
     if (req.accepts('html')) {
-        res.sendFile(path.join(__dirname, 'views', '404.html'))
+        res.sendFile(path.join(__dirname, 'views', '404.html'));
     }
     else if (req.accepts('json')) {
-        res.json({ message: '404 Not Found' })
+        res.json({ message: '404 Not Found' });
     }
     else {
-        res.type('txt').send('404 Not Found')
+        res.type('txt').send('404 Not Found');
     }
 });
 

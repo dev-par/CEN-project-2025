@@ -5,6 +5,7 @@ import rootRouter from './routes/root.js';
 import clubsRouter from './routes/clubs.js';
 import { fileURLToPath } from "url";
 //import records from "./routes/record.js";
+import authRouter from './routes/auth.js';
 
 const PORT = process.env.PORT || 5050;
 const app = express();
@@ -21,6 +22,7 @@ app.use('/', express.static(path.join(__dirname, 'public')))
 app.use('/', rootRouter);
 
 app.use('/api/clubs', clubsRouter);
+app.use('/api', authRouter);
 
 app.all('*', (req, res) => {
     res.status(404)

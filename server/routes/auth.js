@@ -5,6 +5,10 @@ import User from '../db/UserModel.js'; // Adjust if needed
 
 const router = express.Router();
 
+router.get('/test', (req, res) => {
+  res.json({ message: 'Auth route is working' });
+});
+
 // Route: POST /api/register
 router.post('/register', async (req, res) => {
   try {

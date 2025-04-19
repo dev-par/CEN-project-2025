@@ -41,6 +41,9 @@ function App() {
   }, [search, filters])
 
   return (
++   <div style={{ background: 'yellow', padding: '1rem', textAlign: 'center' }}>
++     🚀 App is rendering!
++   </div>
     <>
       <AuthModal
         isOpen={isAuthOpen}

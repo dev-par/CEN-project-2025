@@ -1,69 +1,86 @@
-import { useState, useEffect } from 'react';
-import SideBar from './components/SideBar';
-import ClubCard from './components/ClubCard';
-import './App.css';
+import { useState, useEffect, Fragment } from 'react'
+import SideBar from './components/SideBar'
+import ClubCard from './components/ClubCard'
+import AuthModal from './components/AuthModal'
+import './App.css'
 
 function App() {
-  const [search, setSearch] = useState('');
-  const [filters, setFilter] = useState({ majors: [] });
-  const [results, setResults] = useState([]);
+  const [search, setSearch] = useState('')
+  const [filters, setFilter] = useState({ majors: [] })
+  const [results, setResults] = useState([])
+  const [isAuthOpen, setAuthOpen] = useState(false)
+  const [authMode, setAuthMode] = useState('login')
 
   useEffect(() => {
     const fetchClubs = async () => {
-      const hasSearch = search.trim() !== '';
-      const hasMajors = filters.majors.length > 0;
+      const hasSearch = search.trim() !== ''
+      const hasMajors = filters.majors.length > 0
 
       if (!hasSearch && !hasMajors) {
-        setResults([]);
-        return;
+        setResults([])
+        return
       }
 
-      const query = new URLSearchParams();
+      const query = new URLSearchParams()
+      if (hasSearch) query.append('search', search)
+      if (hasMajors) query.append('major', filters.majors.join(','))
 
-      if (hasSearch) {
-        query.append('search', search);
-      }
-
-      if (hasMajors) {
-        const majorsAsString = filters.majors.join(',');
-        query.append('major', majorsAsString);
-      }
+      console.log('Fetching clubs with query:', query.toString())
 
       try {
-        const res = await fetch(`http://localhost:5050/api/clubs?${query.toString()}`);
-        const data = await res.json();
-        setResults(data);
+        const token = localStorage.getItem('token')
+        const url = `http://localhost:5050/api/clubs?${query}`
+        console.log('Making request to:', url)
+        const res = await fetch(url, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {}
+        })
+        const data = await res.json()
+        console.log('Received clubs data:', data)
+        setResults(data)
       } catch (err) {
-        console.error('Error fetching clubs:', err);
+        console.error('Error fetching clubs:', err)
       }
-    };
+    }
 
-    fetchClubs();
-  }, [search, filters]);
+    fetchClubs()
+  }, [search, filters])
 
   return (
-    <div className="container">
-      <SideBar filters={filters} setFilter={setFilter} />
+    <Fragment>
+      <AuthModal
+        isOpen={isAuthOpen}
+        onClose={() => setAuthOpen(false)}
+        onSwitch={setAuthMode}
+      />
 
-      <div className="main-content">
-        <h1>Campus Connect</h1>
+      <div className="container">
+        <SideBar filters={filters} setFilter={setFilter} />
 
-        <input
-          type="text"
-          placeholder="Search clubs..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="search-bar"
-        />
+        <div className="main-content">
+          <header className="app-header">
+            <h1>Campus Connect</h1>
+            <button onClick={() => { setAuthMode('login'); setAuthOpen(true) }}>
+              Log In / Sign Up
+            </button>
+          </header>
 
-        <div className="results">
-          {results.slice(0, 2).map((club) => (
-            <ClubCard key={club._id} club={club} />
-          ))}
+          <input
+            type="text"
+            placeholder="Search clubs..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            className="search-bar"
+          />
+
+          <div className="results">
+            {results.slice(0, 2).map(club => (
+              <ClubCard key={club._id} club={club} />
+            ))}
+          </div>
         </div>
       </div>
-    </div>
-  );
+    </Fragment>
+  )
 }
 
-export default App;
+export default App

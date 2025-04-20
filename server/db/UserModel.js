@@ -11,7 +11,8 @@ class User {
   }
 
   static async findOne(query) {
-    return await users.findOne(query);
+    const userData = await users.findOne(query);
+    return userData ? new User(userData) : null;
   }
 
   async save() {

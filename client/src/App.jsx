@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Fragment } from 'react'
 import SideBar from './components/SideBar'
 import ClubCard from './components/ClubCard'
 import AuthModal from './components/AuthModal'
@@ -25,12 +25,17 @@ function App() {
       if (hasSearch) query.append('search', search)
       if (hasMajors) query.append('major', filters.majors.join(','))
 
+      console.log('Fetching clubs with query:', query.toString())
+
       try {
         const token = localStorage.getItem('token')
-        const res = await fetch(`http://localhost:${process.env.PORT || 5050}/api/clubs?${query}`, {
+        const url = `http://localhost:5050/api/clubs?${query}`
+        console.log('Making request to:', url)
+        const res = await fetch(url, {
           headers: token ? { Authorization: `Bearer ${token}` } : {}
         })
         const data = await res.json()
+        console.log('Received clubs data:', data)
         setResults(data)
       } catch (err) {
         console.error('Error fetching clubs:', err)
@@ -41,10 +46,7 @@ function App() {
   }, [search, filters])
 
   return (
-+   <div style={{ background: 'yellow', padding: '1rem', textAlign: 'center' }}>
-+     🚀 App is rendering!
-+   </div>
-    <>
+    <Fragment>
       <AuthModal
         isOpen={isAuthOpen}
         onClose={() => setAuthOpen(false)}
@@ -77,7 +79,7 @@ function App() {
           </div>
         </div>
       </div>
-    </>
+    </Fragment>
   )
 }
 

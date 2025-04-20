@@ -73,9 +73,19 @@ function App() {
           />
 
           <div className="results">
-            {results.slice(0, 2).map(club => (
-              <ClubCard key={club._id} club={club} />
-            ))}
+            {results.length > 0 ? (
+              results.slice(0, 2).map(club => (
+                <ClubCard key={club._id} club={club} />
+              ))
+            ) : (
+              <div className="start_screen">
+                <p>
+                  {!search.trim() && filters.majors.length === 0
+                    ? "Select a major or search for a club to get started!"
+                    : "No clubs found matching your search criteria."}
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>

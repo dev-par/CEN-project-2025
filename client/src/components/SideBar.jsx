@@ -10,7 +10,8 @@ function Sidebar({ filters, setFilter }) {
     'Engineering',
     'Data Science',
     'Business',
-    'Pre-Med'
+    'Pre-Med',
+    'Pre-Law'
   ];
 
   // when user clicks a checkbox

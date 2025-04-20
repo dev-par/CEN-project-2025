@@ -41,7 +41,7 @@ You're going to need to add the .env file before starting the backend or else th
 ### 2️⃣ Start the Frontend
 ```
 cd client
-npm start
+npm run dev
 ```
 - Runs the **React app** on `http://localhost:xxxx`
 

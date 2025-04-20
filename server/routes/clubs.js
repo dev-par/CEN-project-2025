@@ -39,28 +39,34 @@ router.post('/', async (req, res) => {
 
 // get all clubs or filter by major
 router.get('/', async (req, res) => {
-    const { major, sortBy } = req.query;
+    const { major, sortBy, search } = req.query;
     let sortOptions = {};
-
+    let query = {};
+  
+    // filter by major if selected
+    if (major) {
+      query.major = major;
+    }
+  
+    
+    if (search && search.trim() !== '') {
+      query.name = { $regex: `^${search}`, $options: 'i' };
+    }
+  
+    
     if (sortBy === 'recentlyUpdated') {
-        sortOptions = { updatedAt: -1 };
+      sortOptions = { updatedAt: -1 };
     }
-
+  
     try {
-        const query = major ? { major } : {};
-        const result = await clubs.find(query).sort(sortOptions).toArray();
-
-        if (result.length === 0) {
-            return res.status(200).json({ message: "No clubs found", data: [] });
-        }
-
-        res.status(200).json(result);
-    } catch(err) {
-        console.error(err);
-        res.status(500).json({ message: "Server error" });
+      const result = await clubs.find(query).sort(sortOptions).toArray();
+      res.status(200).json(result); 
+    } catch (err) {
+      console.error('Error fetching clubs:', err);
+      res.status(500).json({ message: "Server error" });
     }
-});
-
+  });
+  
 // update club by ID
 router.put('/:id', async (req, res) => {
     const { id } = req.params;

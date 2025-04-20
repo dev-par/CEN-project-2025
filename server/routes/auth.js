@@ -49,11 +49,16 @@ router.post('/login', async (req, res) => {
     }
 
     const user = await User.findOne({ email });
+    console.log('User found:', user);
     if (!user) {
       return res.status(400).json({ error: 'Invalid credentials.' });
     }
+    console.log('Password entered:', password);
+    console.log('Hashed password in DB:', user.password);
 
     const isMatch = await bcrypt.compare(password, user.password);
+    console.log('Password match result:', isMatch);
+    
     if (!isMatch) {
       return res.status(400).json({ error: 'Invalid credentials.' });
     }

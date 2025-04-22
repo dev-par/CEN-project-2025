@@ -54,7 +54,6 @@ h1 {
   color: #FFFFFF;
   margin-bottom: 1rem;
   text-align: center;
-  -webkit-text-stroke: 0.5px black;
 }
 
 /* search bar */
@@ -66,8 +65,9 @@ h1 {
   font-size: 1rem;
   margin: 1rem;
   border-radius: 10px;
+  transition: all 0.3s ease;
 }
-
+ 
 /* effects when search bar clicked */
 .search-bar:focus {
   border-color: #4299e1;
@@ -111,6 +111,11 @@ h1 {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+}
+/* hover effects */
+.club-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
 }
 
 /* club name */

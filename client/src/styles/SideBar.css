@@ -17,7 +17,6 @@
 .sidebar label {
     display: flex;
     align-items: center;
-    gap: .5rem;
     font-size: 1rem;
     cursor: pointer;
 }    

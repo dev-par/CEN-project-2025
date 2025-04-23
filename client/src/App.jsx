@@ -2,6 +2,7 @@ import { useState, useEffect, Fragment } from 'react'
 import SideBar from './components/SideBar'
 import ClubCard from './components/ClubCard'
 import AuthModal from './components/AuthModal'
+import Notification from './components/Notification'
 import './App.css'
 
 function App() {
@@ -10,20 +11,22 @@ function App() {
   const [results, setResults] = useState([])
   const [isAuthOpen, setAuthOpen] = useState(false)
   const [authMode, setAuthMode] = useState('login')
+  const [notification, setNotification] = useState(null)
+
+  const hasActiveFilters = filters.majors.length > 0
+  const hasSearch = search.trim() !== ''
+  const showLandingMessage = !hasActiveFilters && !hasSearch
 
   useEffect(() => {
     const fetchClubs = async () => {
-      const hasSearch = search.trim() !== ''
-      const hasMajors = filters.majors.length > 0
-
-      if (!hasSearch && !hasMajors) {
+      if (!hasSearch && !hasActiveFilters) {
         setResults([])
         return
       }
 
       const query = new URLSearchParams()
       if (hasSearch) query.append('search', search)
-      if (hasMajors) query.append('major', filters.majors.join(','))
+      if (hasActiveFilters) query.append('major', filters.majors.join(','))
 
       console.log('Fetching clubs with query:', query.toString())
 
@@ -43,14 +46,34 @@ function App() {
     }
 
     fetchClubs()
-  }, [search, filters])
+  }, [search, filters, hasSearch, hasActiveFilters])
+
+  const handleAuthSuccess = (message) => {
+    setNotification({
+      message,
+      type: 'success'
+    });
+  };
+
+  const closeNotification = () => {
+    setNotification(null);
+  };
 
   return (
     <Fragment>
+      {notification && (
+        <Notification
+          message={notification.message}
+          type={notification.type}
+          onClose={closeNotification}
+        />
+      )}
+
       <AuthModal
         isOpen={isAuthOpen}
         onClose={() => setAuthOpen(false)}
         onSwitch={setAuthMode}
+        onAuthSuccess={handleAuthSuccess}
       />
 
       <div className="container">
@@ -73,9 +96,20 @@ function App() {
           />
 
           <div className="results">
-            {results.slice(0, 2).map(club => (
-              <ClubCard key={club._id} club={club} />
-            ))}
+            {showLandingMessage ? (
+              <div className="landing-message">
+                <h2>Welcome to Campus Connect!</h2>
+                <p>Search clubs or use filters to start exploring</p>
+              </div>
+            ) : results.length > 0 ? (
+              results.slice(0, 2).map(club => (
+                <ClubCard key={club._id} club={club} />
+              ))
+            ) : (
+              <div className="no-results-message">
+                <p>No clubs found matching your criteria</p>
+              </div>
+            )}
           </div>
         </div>
       </div>

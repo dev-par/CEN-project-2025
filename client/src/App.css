@@ -132,3 +132,45 @@ h1 {
   margin: 0.5rem 0;
   font-size: 1.3rem;
 }
+
+/* Landing page message */
+.landing-message {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  width: 100%;
+  margin: 2rem auto;
+}
+
+.landing-message h2 {
+  color: #0033a0;
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.landing-message p {
+  color: #4a5568;
+  font-size: 1.2rem;
+  line-height: 1.6;
+}
+
+/* No results message */
+.no-results-message {
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 500px;
+  margin: 2rem auto;
+}
+
+.no-results-message p {
+  color: #4a5568;
+  font-size: 1.1rem;
+  margin: 0;
+}

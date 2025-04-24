@@ -45,7 +45,7 @@ router.get('/', async (req, res) => {
   
     // filter by major if selected
     if (major) {
-      query.major = major;
+      query.major = { $all: major.split(',') };
     }
   
     

@@ -1,8 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
+import PropTypes from 'prop-types';
 import './AuthModal.css'; 
 
-export default function AuthModal({ isOpen, onClose, onSwitch }) {
+export default function AuthModal({ isOpen, onClose, onSwitch, onAuthSuccess }) {
   const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const loginFormRef = useRef(null);
+  const registerFormRef = useRef(null);
 
   useEffect(() => {
     const handler = e => e.key === 'Escape' && onClose();
@@ -10,9 +14,16 @@ export default function AuthModal({ isOpen, onClose, onSwitch }) {
     return () => window.removeEventListener('keydown', handler);
   }, [onClose]);
 
+  const clearForm = (formRef) => {
+    if (formRef && formRef.current) {
+      formRef.current.reset();
+    }
+  };
+
   const handleSubmit = async (e, isLogin) => {
     e.preventDefault();
     setError('');
+    setSuccessMessage('');
     
     const form = e.target;
     const email = form.email.value;
@@ -40,14 +51,33 @@ export default function AuthModal({ isOpen, onClose, onSwitch }) {
 
       if (isLogin) {
         localStorage.setItem('token', data.token);
+        clearForm(loginFormRef);
         onClose();
+        // Show success notification
+        onAuthSuccess(`Welcome back! You've successfully logged in.`);
       } else {
-        onSwitch('login');
+        // Show success message for registration
+        setSuccessMessage(data.message || 'Account created successfully! You can now log in.');
+        // Clear the registration form
+        clearForm(registerFormRef);
+        // Switch to login form after a short delay
+        setTimeout(() => {
+          onSwitch('login');
+        }, 2000);
       }
-    } catch (err) {
+    } catch (error) {
+      console.error('Authentication error:', error);
       setError('An error occurred. Please try again.');
     }
   };
+
+  // Clear forms when switching between login and register
+  useEffect(() => {
+    if (isOpen) {
+      clearForm(loginFormRef);
+      clearForm(registerFormRef);
+    }
+  }, [isOpen, onSwitch]);
 
   if (!isOpen) return null;
 
@@ -55,8 +85,10 @@ export default function AuthModal({ isOpen, onClose, onSwitch }) {
     <div className="auth-backdrop" onClick={e => e.target === e.currentTarget && onClose()}>
       <div className="auth-modal">
         {error && <div className="error-message">{error}</div>}
+        {successMessage && <div className="success-message">{successMessage}</div>}
         
         <form
+          ref={loginFormRef}
           id="login-form"
           className={onSwitch === 'login' ? '' : 'hidden'}
           onSubmit={(e) => handleSubmit(e, true)}
@@ -66,7 +98,7 @@ export default function AuthModal({ isOpen, onClose, onSwitch }) {
           <input type="password" name="password" placeholder="Password" required />
           <button type="submit">Log In</button>
           <p className="toggle">
-            Don't have an account?{' '}
+            Dont have an account?{' '}
             <button type="button" onClick={() => onSwitch('register')}>
               Sign up
             </button>
@@ -74,6 +106,7 @@ export default function AuthModal({ isOpen, onClose, onSwitch }) {
         </form>
 
         <form
+          ref={registerFormRef}
           id="register-form"
           className={onSwitch === 'register' ? '' : 'hidden'}
           onSubmit={(e) => handleSubmit(e, false)}
@@ -93,3 +126,10 @@ export default function AuthModal({ isOpen, onClose, onSwitch }) {
     </div>
   );
 }
+
+AuthModal.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onSwitch: PropTypes.func.isRequired,
+  onAuthSuccess: PropTypes.func.isRequired
+};

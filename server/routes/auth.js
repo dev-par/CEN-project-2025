@@ -32,7 +32,10 @@ router.post('/register', async (req, res) => {
     });
 
     await newUser.save();
-    res.status(201).json({ message: 'User registered successfully!' });
+    res.status(201).json({ 
+      message: 'Account created successfully! You can now log in with your email and password.',
+      success: true
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Server error during registration.' });

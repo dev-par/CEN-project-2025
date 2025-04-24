@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
+import { useAuth } from '../context/AuthContext';
 import './AuthModal.css'; 
 
 export default function AuthModal({ isOpen, onClose, onSwitch, onAuthSuccess }) {
@@ -7,6 +8,7 @@ export default function AuthModal({ isOpen, onClose, onSwitch, onAuthSuccess }) 
   const [successMessage, setSuccessMessage] = useState('');
   const loginFormRef = useRef(null);
   const registerFormRef = useRef(null);
+  const { login } = useAuth();
 
   useEffect(() => {
     const handler = e => e.key === 'Escape' && onClose();
@@ -50,17 +52,13 @@ export default function AuthModal({ isOpen, onClose, onSwitch, onAuthSuccess }) 
       }
 
       if (isLogin) {
-        localStorage.setItem('token', data.token);
+        login(data.token);
         clearForm(loginFormRef);
         onClose();
-        // Show success notification
         onAuthSuccess(`Welcome back! You've successfully logged in.`);
       } else {
-        // Show success message for registration
         setSuccessMessage(data.message || 'Account created successfully! You can now log in.');
-        // Clear the registration form
         clearForm(registerFormRef);
-        // Switch to login form after a short delay
         setTimeout(() => {
           onSwitch('login');
         }, 2000);

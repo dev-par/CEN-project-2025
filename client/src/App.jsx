@@ -3,6 +3,7 @@ import SideBar from './components/SideBar'
 import ClubCard from './components/ClubCard'
 import AuthModal from './components/AuthModal'
 import Notification from './components/Notification'
+import { useAuth } from './context/AuthContext'
 import './App.css'
 
 function App() {
@@ -12,6 +13,7 @@ function App() {
   const [isAuthOpen, setAuthOpen] = useState(false)
   const [authMode, setAuthMode] = useState('login')
   const [notification, setNotification] = useState(null)
+  const { isAuthenticated, login, logout } = useAuth()
 
   const hasActiveFilters = filters.majors.length > 0
   const hasSearch = search.trim() !== ''
@@ -55,6 +57,25 @@ function App() {
     });
   };
 
+  const handleLogout = () => {
+    logout();
+    setNotification({
+      message: 'You have been logged out successfully',
+      type: 'success'
+    });
+  };
+
+  const handleAuthModalOpen = (mode) => {
+    console.log('Opening auth modal in mode:', mode);
+    setAuthMode(mode);
+    setAuthOpen(true);
+  };
+
+  const handleAuthModalClose = () => {
+    console.log('Closing auth modal');
+    setAuthOpen(false);
+  };
+
   const closeNotification = () => {
     setNotification(null);
   };
@@ -71,7 +92,7 @@ function App() {
 
       <AuthModal
         isOpen={isAuthOpen}
-        onClose={() => setAuthOpen(false)}
+        onClose={handleAuthModalClose}
         onSwitch={setAuthMode}
         onAuthSuccess={handleAuthSuccess}
       />
@@ -82,9 +103,15 @@ function App() {
         <div className="main-content">
           <header className="app-header">
             <h1>Campus Connect</h1>
-            <button onClick={() => { setAuthMode('login'); setAuthOpen(true) }}>
-              Log In / Sign Up
-            </button>
+            {isAuthenticated ? (
+              <button onClick={handleLogout}>
+                Log Out
+              </button>
+            ) : (
+              <button onClick={() => handleAuthModalOpen('login')}>
+                Log In / Sign Up
+              </button>
+            )}
           </header>
 
           <input
